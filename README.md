@@ -31,9 +31,9 @@ Swiper.js를 이용한 슬라이더와 다양한 해상도 대응을 고려한 �
 
 ### 📸 데모 이미지
 
-| 모바일 메뉴 | 메인 슬라이더 | 구글 맵 API |
+| 메인 슬라이더 | 모바일 메뉴(1depth) | 모바일 메뉴(2depth) |
 |-------------|----------------|-------------|
-| ![](images/ss1.jpg) | ![](images/ss2.jpg) | ![](images/ss4.jpg) |
+| ![](images/ss2.jpg) | ![](images/ss4.jpg) | ![](images/ss5.jpg) |
 
 
 
@@ -134,7 +134,7 @@ let slideInterval = setInterval(function () {
 ### ✅  3. Swiper 슬라이드 (Part1 영역)
 
 <img src="images/ss3_1.jpg" alt="part1">
-<img src="images/ss3_2.jpg" alt="part1">
+<img src="images/ss3_2.jpg" width="200px" alt="part1">
 
 📌 슬라이더 인스턴스 정의
 ```javascript
@@ -204,7 +204,7 @@ $("header .menu").click(function (e) {
 - 상위 메뉴 클릭 시 .active 토글됩니다.
 - 다른 메뉴는 자동으로 닫힙니다.
 
-<img src="images/ss4.jpg" alt="모바일 메뉴 - 2depth 토글">
+<img src="images/ss5.jpg" alt="모바일 메뉴 - 2depth 토글">
 
 ```javascript
 $("header nav > ul > li").click(function (e) {
