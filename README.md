@@ -41,107 +41,194 @@ Swiper.js를 이용한 슬라이더와 다양한 해상도 대응을 고려한 �
 
 ### ⚙️ 기능 상세 설명
 
-### ✅  1. 모바일 메뉴 (Tab Menu)
-- 메뉴 버튼 클릭 시 모바일 메뉴가 오픈됩니다.
-- dim 또는 닫기 버튼 클릭 시 메뉴가 닫힙니다.
-- 오픈 시 `body`에 `fixed` 클래스 추가로 스크롤 방지합니다.
+### ✅  1. 반응형 구분 및 초기 해상도 체크
 
-<img src="images/ss1.jpg" width="300px" alt="모바일 메뉴 상호작용">
+- 브라우저 초기 로딩 시, 화면 너비 기준으로 모바일 여부를 판단합니다.
+- isMobile은 이후 여러 조건의 기준이 됩니다.
 
  ``` JavaScript
-tab.addEventListener("click", function(e){
-  e.preventDefault();
+let isMobile = window.innerWidth <= 580;
 
-  document.body.classList.add("fixed");
-  mobile.classList.add("active");
-  dim.classList.add("active");
+$(window).resize(function () {
+    if (window.innerWidth > 580) {
+        // 데스크탑 화면일 때
+        if (isMobile !== false) {
+            isMobile = false;
+        }
+        // 모바일 메뉴 닫기
+        $(".dim").removeClass("active");
+        $("header nav").removeClass("active");
+        $("header .menu").removeClass("active");
+        document.body.style.overflow = "auto";
+    } else {
+        // 모바일 화면일 때
+        if (isMobile !== true) {
+            isMobile = true;
+        }
+    }
 });
-
-dim.addEventListener("click", function(){
-  document.body.classList.remove("fixed");
-  mobile.classList.remove("active");
-  dim.classList.remove("active");
-});
-
-closeBtn.addEventListener("click", function(e){
-  e.preventDefault();
-
-  document.body.classList.remove("fixed");
-  mobile.classList.remove("active");
-  dim.classList.remove("active");
-});
+$(window).trigger("resize");
 ```
 
 ---
 
-### ✅ 2. 메인 슬라이더 (#main_slider)
+### ✅ 2. 메인 슬라이더 컨트롤 기능 (#slider)
 
-- 페이지 네비게이션(fraction)입니다.
-- 좌우 버튼 제어가 가능합니다.
+<img src="images/ss2.jpg"  alt="메인 슬라이더">
 
-<img src="images/ss2.jpg" width="300px" alt="모바일 메뉴 상호작용">
-
+📌 슬라이더 초기값
 ```javascript
-	const mainSwiper=new Swiper("#main_slider .swiper-container", {
-		navigation: {
-			prevEl: "#main_slider .swiper-button-prev",
-			nextEl: "#main_slider .swiper-button-next"
-		},
-		pagination: {
-			el: "#main_slider .swiper-pagination",
-			type: "fraction"
-		}
-	});
+let idx = 0;            // 현재 보여줄 슬라이드 인덱스
+let targetx = 0;        // 이동할 위치값
+let sliderw = 2000;     // 슬라이드 한 장의 너비 (px 기준)
 ```
 
----
-
-### ✅  3. 서브 슬라이더 (#sub_slider)
-
-- 모바일 기준 1.5개 노출, 태블릿 이상에서 3.5개가 노출됩니다.
-- 반응형 설정 포함합니다.
-
-<img src="images/ss3.jpg" alt="추천레시피 - 서브 슬라이더">
-
+📌 슬라이드 전환 함수
 ```javascript
-	const subSwiper=new Swiper("#sub_slider .swiper-container", {
-		slidesPerView: 1.5,
-		spaceBetween: 10,
-		breakpoints: {
-			640: {
-				slidesPerView: 3.5,
-				spaceBetween: 5
-			}
-		}
-	});
-```
+    function galleryfn() {
+        $("#slider .controller li").removeClass("on");
+        $("#slider .controller li").eq(idx).addClass("on");
 
----
+        targetx = -1 * sliderw * idx;
 
-### ✅ 4. Google Maps API
+        $("#slider .image ul li").removeClass("active");
+        $("#slider .image ul li").eq(idx).addClass("active");
+    }
 
-- 중심 좌표: 오뚜기 위치 (위도: 37.3901, 경도: 126.9715)
-- 마커 타이틀: (주)오뚜기
+    $("#slider .controller ul li").eq(idx).addClass("on");
+    $("#slider .image ul li").eq(idx).addClass("active");
 
-<img src="images/ss4.jpg" alt="구글 맵 API">
-
-```javascript
-function initMap(){
-	let myLatLng={lat: 37.390141551118695, lng: 126.97151846772532};
-
-	let map=new google.maps.Map(document.getElementById("map"), {
-		center: myLatLng,
-		zoom: 16,
-		mapTypeControl: false,
-		zoomControl: false,
-		fullscreenControl: false,
-		rotateControl: false
-	});
-
-	let marker=new google.maps.Marker({
-		position: myLatLng,
-		map: map,
-		title: "(주)오뚜기"
-	});
+    $("#slider .controller li").click(function (e) {
+        e.preventDefault();
+        idx = $(this).index();
+        galleryfn();
+    });
 }
+```
+
+📌 컨트롤러 클릭 이벤트
+```javascript
+$("#slider .controller li").click(function (e) {
+    e.preventDefault();
+    idx = $(this).index(); // 클릭한 인덱스
+    galleryfn();
+});
+```
+
+📌 초기 슬라이드 세팅
+```javascript
+$("#slider .controller ul li").eq(idx).addClass("on");
+$("#slider .image ul li").eq(idx).addClass("active");
+```
+
+📌 자동 슬라이드 (3초 간격)
+```javascript
+let slideInterval = setInterval(function () {
+    idx = (idx + 1) % 4; // 슬라이드 총 4개 기준
+    galleryfn();
+}, 3000);
+```
+
+---
+
+### ✅  3. Swiper 슬라이드 (Part1 영역)
+
+<img src="images/ss3_1.jpg" alt="part1">
+<img src="images/ss3_2.jpg" alt="part1">
+
+📌 슬라이더 인스턴스 정의
+```javascript
+let swiper = null;
+```
+
+📌 화면 너비에 따른 슬라이드 생성/제거 함수
+```javascript
+function updateSwiper() {
+    if (window.innerWidth < 720) {
+        // 모바일: swiper 슬라이더 생성
+        if (!swiper) {
+            swiper = new Swiper(".mySwiper", {
+                slidesPerView: 2,    // 한 번에 보일 슬라이드 수
+                spaceBetween: 0,     // 슬라이드 간 여백
+                loop: true,          // 무한 반복
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+            });
+        }
+    } else {
+        // 데스크탑: swiper 제거
+        if (swiper) {
+            swiper.destroy();
+            swiper = null;
+        }
+    }
+}
+```
+
+📌 적용 시점
+```javascript
+$(document).ready(updateSwiper);
+$(window).resize(updateSwiper);
+```
+
+---
+
+### ✅  4. 모바일 헤더 메뉴 토글
+
+- 메뉴 버튼 클릭 시 nav, menu, dim에 .active 클래스 토글됩니다.
+- 메뉴 열릴 때는 body 스크롤 잠금, 닫히면 스크롤 허용합니다.
+
+<img src="images/ss4.jpg" alt="모바일 헤더 메뉴 토글">
+
+```javascript
+$("header .menu").click(function (e) {
+    e.preventDefault();
+    if (isMobile) {
+        let isActive = $("header nav").hasClass("active");
+        $(".dim, header nav, header .menu").toggleClass("active", !isActive);
+        document.body.style.overflow = isActive ? "auto" : "hidden";
+    }
+});
+```
+
+---
+
+### ✅  5. 모바일 메뉴 > 서브 메뉴 토글
+
+- 상위 메뉴 클릭 시 .active 토글됩니다.
+- 다른 메뉴는 자동으로 닫힙니다.
+
+<img src="images/ss4.jpg" alt="모바일 메뉴 - 2depth 토글">
+
+```javascript
+$("header nav > ul > li").click(function (e) {
+    e.preventDefault();
+    $(this).toggleClass("active").siblings().removeClass("active");
+});
+```
+
+---
+
+### ✅  6. 데스크탑 전용 hover 효과
+
+- 마우스 호버 시 .active 클래스 부여합니다.
+- 모바일에서는 비활성화됩니다.
+
+<img src="images/ss6.jpg" alt="데스크탑 hover">
+
+```javascript
+$("header nav > ul > li, header nav > ul > li .sub li, #part1 .swiper-wrapper .swiper-slide a, #part3 .lab a").hover(
+    function () {
+        if (!isMobile) $(this).addClass("active");
+    },
+    function () {
+        if (!isMobile) $(this).removeClass("active");
+    }
+);
 ```
