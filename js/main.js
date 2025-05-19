@@ -1,98 +1,174 @@
-$(function () {
-    let isMobile = window.innerWidth <= 580; // 초기값 설정
+$(function(){
+	let isMobile;
 
-    $(window).resize(function () {
-        if (window.innerWidth > 580) {
-            if (isMobile !== false) {
-                isMobile = false;
-            }
-            $(".dim").removeClass("active");
-            $("header nav").removeClass("active");
-            $("header .menu").removeClass("active");
-            document.body.style.overflow = "auto";
-        } else {
-            if (isMobile !== true) {
-                isMobile = true;
-            }
-        }
-    });
+	$(window).resize(function(){
+		if(window.innerWidth > 950){
+			if(isMobile != false){
+				isMobile=false
 
-    $(window).trigger("resize");
+				if($(".tab").hasClass("active") == true){
+					$("nav > ul > li").each(function(index, item){
+						let $item=$(item);
 
-    // Slider
-    let idx = 0;
-    let targetx = 0;
-    let sliderw = 2000;
+						$item.removeClass("active");
+						$item.find("ul").slideUp(300);
+					});
 
-    function galleryfn() {
-        $("#slider .controller li").removeClass("on");
-        $("#slider .controller li").eq(idx).addClass("on");
+					$("body").removeClass("fixed");
+					$("nav").removeClass("active");
+					$(".tab").removeClass("active");
+					$(".dimmed").removeClass("active");
+				}
+			}
+		}
+		else {
+			if(isMobile != true){
+				isMobile=true
+			}
+		}
+	});
 
-        targetx = -1 * sliderw * idx;
+	$(window).trigger("resize");
 
-        $("#slider .image ul li").removeClass("active");
-        $("#slider .image ul li").eq(idx).addClass("active");
-    }
+	$(".nav > ul > li").hover(
+		function(){
+			if(isMobile == false){
+				$(this).find("ul").stop().slideDown(300);
+			}
+		},
+		function(){
+			if(isMobile == false){
+				$(this).find("ul").stop().slideUp(300);
+			}
+		}
+	);
 
-    $("#slider .controller ul li").eq(idx).addClass("on");
-    $("#slider .image ul li").eq(idx).addClass("active");
+	$(".nav > ul > li > a").focusin(function(){
+		if(isMobile == false){
+			$(this).parent().addClass("active");
+			$(this).next("ul").slideDown(300);
+		}
+	});
 
-    $("#slider .controller li").click(function (e) {
-        e.preventDefault();
-        idx = $(this).index();
-        galleryfn();
-    });
+	$(".nav ul ul li:last-child a").focusout(function(){
+		if(isMobile == false){
+			$(this).parent().parent().parent().removeClass("active");
+			$(this).parent().parent().slideUp(300);
+		}
+	});
 
-    // 슬라이드 자동 재생 (중복 실행 방지)
-    let slideInterval = setInterval(function () {
-        idx = (idx + 1) % 4;
-        galleryfn();
-    }, 3000);
+	$(".tab").click(function (e) {
+		e.preventDefault();
 
-    // #part1 슬라이드
-    let swiper = null;
+		if(isMobile == true){
+			if($(".tab").hasClass("active") == false){
+				$("body").addClass("fixed");
+				$("nav").addClass("active");
+				$(".tab").addClass("active");
+				$(".dimmed").addClass("active");
+			}
+			else{
+				// $("nav > ul > li").removeClass("active");
+				// $("nav li ul").slideUp(300);
 
-    function updateSwiper() {
-        if (window.innerWidth < 720) {
-            if (!swiper) {
-                swiper = new Swiper(".mySwiper", {
-                    slidesPerView: 2,
-                    spaceBetween: 0,
-                });
-            }
-        } else {
-            if (swiper) {
-                swiper.destroy();
-                swiper = null;
-            }
-        }
-    }
+				$(".nav > ul > li").each(function(index, item){
+					let $item=$(item);
 
-    $(document).ready(updateSwiper);
-    $(window).resize(updateSwiper);
+					$item.removeClass("active");
+					$item.find("ul").slideUp(300);
+				});
 
-    // 해상도 580px 이하에서 메뉴 토글
-    $("header .menu").click(function (e) {
-        e.preventDefault();
-        if (isMobile) {
-            let isActive = $("header nav").hasClass("active");
-            $(".dim, header nav, header .menu").toggleClass("active", !isActive);
-            document.body.style.overflow = isActive ? "auto" : "hidden";
-        }
-    });
+				$("body").removeClass("fixed");
+				$("nav").removeClass("active");
+				$(".tab").removeClass("active");
+				$(".dimmed").removeClass("active");
+			}
+		}
+	});
 
-    $("header nav > ul > li").click(function (e) {
-        e.preventDefault();
-        $(this).toggleClass("active").siblings().removeClass("active");
-    });
+	$(".nav > ul > li").click(function(e){
+		e.preventDefault();
 
-    // 데스크탑 메뉴 hover 효과
-    $("header nav > ul > li, header nav > ul > li .sub li, #part1 .swiper-wrapper .swiper-slide a, #part3 .lab a").hover(
-        function () {
-            if (!isMobile) $(this).addClass("active");
-        },
-        function () {
-            if (!isMobile) $(this).removeClass("active");
-        }
-    );
+		if(isMobile == true){
+			if($(this).hasClass("active") == false){
+				console.log("false");
+				$(".nav > ul > li").removeClass("active");
+				$(this).addClass("active");
+				$(".nav li ul").slideUp(300);
+				$(this).find("ul").slideDown(300);
+			}
+			else{
+				$(this).removeClass("active");
+				$(this).find("ul").slideUp(300);
+			}
+		}
+	});
+
+	let n=0;
+	let index=0;
+	let total=4
+
+	$(".slider li").eq(n).addClass("active");
+	$(".slider .control li").eq(n).addClass("active");
+
+	function setGallery(){
+		$(".slider li").removeClass("active");
+		$(".slider li").eq(n).addClass("active");
+		$(".control li").removeClass("active");
+		$(".slider .control li").eq(n).addClass("active");
+	}
+
+	function intervalMoving(){
+		if(n < (total-1)){
+			n=n+1;
+		}
+		else{
+			n=0;
+		}
+		setGallery();
+	}
+
+	// let id=setInterval(intervalMoving, 5000);
+
+	$(".slider .control li").click(function(e){
+		e.preventDefault();
+		index=$(this).index();
+
+		if(n != index){
+			n=index;
+			setGallery();
+		}
+	});
+
+	$(".slider .control li").hover(
+		function(){
+			clearInterval(id);
+		},
+		function(){
+			id=setInterval(intervalMoving, 5000);
+		}
+	);
+
+	$(".lnb .close").click(function(e){
+		e.preventDefault();
+		$(this).toggleClass("active");
+	});
+
+	let t=0;
+
+	$(window).scroll(function(){
+		t=$(window).scrollTop();
+
+		if(t > 100){
+			$("#top").fadeIn(300);
+		}
+		else{
+			$("#top").fadeOut(300);
+		}
+	});
+
+	$("#top").click(function(e){
+		e.preventDefault();
+		$("html").delay(300).animate({ scrollTop: 0 }, 500);
+	});
 });
