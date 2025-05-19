@@ -42,7 +42,7 @@ jQuery 기반의 DOM 제어로 사용자 상호작용을 구현하였고,  <br>
 - 윈도우 너비가 950px 이상이면 PC, 이하면 모바일로 인식합니다.
 - 전환 시 메뉴 상태를 초기화합니다.
 
-<img src="images/ss2.jpg"  alt="반응형 내비게이션">
+<img src="images/ss1.jpg"  alt="반응형 내비게이션">
 
  ``` JavaScript
 $(window).resize(function(){
@@ -224,7 +224,7 @@ $(".slider .control li").hover(
 - 스크롤 위치가 100px 초과하면(header 높이) 상단 이동 버튼이 나타납니다.
 - 버튼 클릭 시 부드럽게 상단으로 스크롤됩니다.
 
-<img src="images/ss6.jpg" alt="데스크탑 hover">
+<img src="images/ss7.jpg" alt="데스크탑 hover">
 
 ```javascript
 $(window).scroll(function() {
